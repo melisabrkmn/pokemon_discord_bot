@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from config import token
+from config import TOKEN as token
 from logic import Pokemon
 
 # Bot için yetkileri/intents ayarlama

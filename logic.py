@@ -22,7 +22,7 @@ class Pokemon:
                     data = await response.json()  # JSON yanıtının alınması ve çözümlenmesi
                     return data['forms'][0]['name']  #  Pokémon adını döndürme
                 else:
-                    return "Pikachu"  # İstek başarısız olursa varsayılan adı döndürür
+                    return "IT'S PIKACHU!!!"  # İstek başarısız olursa varsayılan adı döndürür
 
     async def info(self):
         # Pokémon hakkında bilgi döndüren bir metot
@@ -32,3 +32,11 @@ class Pokemon:
 
     async def show_img(self):
         # PokeAPI aracılığıyla bir pokémon görüntüsünün URL'sini almak için asenktron metot
+        url = f'https://pokeapi.co/api/v2/pokemon/{self.pokemon_number}'  
+        async with aiohttp.ClientSession() as session:  
+            async with session.get(url) as response:  
+                if response.status == 200:
+                    data = await response.json()  
+                    return data['sprites']['front_default']  
+                else:
+                    return "https://media3.giphy.com/media/v1.Y2lkPTZjMDliOTUybWlxaXMzcWptem90bXBldXd1dG9kd3FidHMyZnFiNzVvazQzZW54aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/hJ7qjPQk4V5w0aGihs/source.gif"
