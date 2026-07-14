@@ -36,3 +36,5 @@ async def go(ctx):
         await ctx.send("Zaten kendi Pokémonunuzu oluşturdunuz!")  # Bir Pokémon'un daha önce oluşturulup oluşturulmadığını gösteren bir mesaj
 # Botun çalıştırılması
 bot.run(token)
+
+#Melisa
