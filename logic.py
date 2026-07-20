@@ -1,4 +1,4 @@
-import aiohttp  # Eşzamansız HTTP istekleri için bir kütüphane
+import aiohttp  # Eşzamansız HTTP istekleri için kütüphane
 import random
 
 class Pokemon:
@@ -7,36 +7,55 @@ class Pokemon:
     def __init__(self, pokemon_trainer):
         self.pokemon_trainer = pokemon_trainer
         self.pokemon_number = random.randint(1, 1000)
+
+        #sınıf nitelikleri
         self.name = None
+        self.sprite = None
+        self.weight = None
+        self.height = None
+        self.types = []
+
         if pokemon_trainer not in Pokemon.pokemons:
             Pokemon.pokemons[pokemon_trainer] = self
-        else:
-            self = Pokemon.pokemons[pokemon_trainer]
 
-    async def get_name(self):
-        # PokeAPI aracılığıyla bir pokémonun adını almak için asenktron metot
-        url = f'https://pokeapi.co/api/v2/pokemon/{self.pokemon_number}'  # İstek için URL API
-        async with aiohttp.ClientSession() as session:  #  HTTP oturumu açma
-            async with session.get(url) as response:  # GET isteği gönderme
+    async def load_data(self):
+        if self.name is not None:  #veriler zaten yüklendiyse tekrar istek atma 
+            return
+        url = f'https://pokeapi.co/api/v2/pokemon/{self.pokemon_number}'
+        async with aiohttp.ClientSession() as session:  # HTTP oturumu açma
+            async with session.get(url) as response:     # GET isteği gönderme
                 if response.status == 200:
-                    data = await response.json()  # JSON yanıtının alınması ve çözümlenmesi
-                    return data['forms'][0]['name']  #  Pokémon adını döndürme
-                else:
-                    return "IT'S PIKACHU!!!"  # İstek başarısız olursa varsayılan adı döndürür
+                    data = await response.json()
 
-    async def info(self):
-        # Pokémon hakkında bilgi döndüren bir metot
-        if not self.name:
-            self.name = await self.get_name()  # Henüz yüklenmemişse bir adın geri alınması
-        return f"Pokémonunuzun ismi: {self.name}"  # Pokémon adını içeren dizeyi döndürür
+                    # API'dan gelen verileri niteliklerle eşleştirme
+                    self.name = data['name'].capitalize()
+                    self.sprite = data['sprites']['front_default'] or "https://media3.giphy.com/media/v1.Y2lkPTZjMDliOTUybWlxaXMzcWptem90bXBldXd1dG9kd3FidHMyZnFiNzVvazQzZW54aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/hJ7qjPQk4V5w0aGihs/source.gif"
 
-    async def show_img(self):
-        # PokeAPI aracılığıyla bir pokémon görüntüsünün URL'sini almak için asenktron metot
-        url = f'https://pokeapi.co/api/v2/pokemon/{self.pokemon_number}'  
-        async with aiohttp.ClientSession() as session:  
-            async with session.get(url) as response:  
-                if response.status == 200:
-                    data = await response.json()  
-                    return data['sprites']['front_default']  
+                    # m ve kg cinsinden boyut ve ağırlık
+                    self.weight = data['weight'] / 10
+                    self.height = data['height'] / 10
+
+                    # pokemon'un sahip olduğu türleri listeleme
+                    self.types = [t['type']['name'].capitalize() for t in data['types']]
                 else:
-                    return "https://media3.giphy.com/media/v1.Y2lkPTZjMDliOTUybWlxaXMzcWptem90bXBldXd1dG9kd3FidHMyZnFiNzVvazQzZW54aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/hJ7qjPQk4V5w0aGihs/source.gif"
+                    # İstek başarısız olursa varsayılan adı döndürür
+                    self.name = "IT'S PICACHU!!!!"
+                    self.sprite = "https://media3.giphy.com/media/v1.Y2lkPTZjMDliOTUybWlxaXMzcWptem90bXBldXd1dG9kd3FidHMyZnFiNzVvazQzZW54aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/hJ7qjPQk4V5w0aGihs/source.gif"
+                    self.weight = 0
+                    self.height = 0
+                    self.types = ["Unknown"]
+
+    def get_name(self):
+        return self.name
+
+    def get_sprite(self):
+        return self.sprite
+
+    def get_weight(self):
+        return f"{self.weight} kg"
+
+    def get_height(self):
+        return f"{self.height} m"
+
+    def get_types(self):
+        return ", ".join(self.types)
