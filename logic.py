@@ -14,6 +14,12 @@ class Pokemon:
         self.weight = None
         self.height = None
         self.types = []
+        
+        self.level = 1
+        self.exp = 0
+        self.hp = 0
+        self.attack = 0
+        self.is_shiny = random.random() < 0.10 
 
         if pokemon_trainer not in Pokemon.pokemons:
             Pokemon.pokemons[pokemon_trainer] = self
@@ -29,14 +35,24 @@ class Pokemon:
 
                     # API'dan gelen verileri niteliklerle eşleştirme
                     self.name = data['name'].capitalize()
-                    self.sprite = data['sprites']['front_default'] or "https://media3.giphy.com/media/v1.Y2lkPTZjMDliOTUybWlxaXMzcWptem90bXBldXd1dG9kd3FidHMyZnFiNzVvazQzZW54aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/hJ7qjPQk4V5w0aGihs/source.gif"
+                    # Shiny (nadir) pokemonlar için
+                    if self.is_shiny:
+                        self.name = f"Shiny {self.name}"
+                        self.sprite = data['sprites']['front_shiny'] or data['sprites']['front_default']
+                    else:
+                        self.sprite = data['sprites']['front_default'] or "https://media3.giphy.com/media/v1.Y2lkPTZjMDliOTUybWlxaXMzcWptem90bXBldXd1dG9kd3FidHMyZnFiNzVvazQzZW54aiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/hJ7qjPQk4V5w0aGihs/source.gif"
 
                     # m ve kg cinsinden boyut ve ağırlık
                     self.weight = data['weight'] / 10
                     self.height = data['height'] / 10
-
                     # pokemon'un sahip olduğu türleri listeleme
                     self.types = [t['type']['name'].capitalize() for t in data['types']]
+
+                    for stat in data['stats']:
+                        if stat['stat']['name'] == 'hp':
+                            self.hp = stat['base_stat']
+                        elif stat['stat']['name'] == 'attack':
+                            self.attack = stat['base_stat']
                 else:
                     # İstek başarısız olursa varsayılan adı döndürür
                     self.name = "IT'S PICACHU!!!!"
@@ -45,17 +61,22 @@ class Pokemon:
                     self.height = 0
                     self.types = ["Unknown"]
 
-    def get_name(self):
-        return self.name
+    def feed(self):
+        # Shiny ise 20 EXP, normal ise 10 EXP kazanma
+        exp_gained = 20 if self.is_shiny else 10
+        self.exp += exp_gained
+        
+        # her 30 EXP'de bir seviye atlar
+        if self.exp >= 30:
+            self.level += 1
+            self.exp -= 30
+            self.hp += 5      # HP artar
+            self.attack += 3  # saldırı artar
+            return True   # seviye atladı
+        return False      # sadece beslendi (seviye atlamadı)
 
-    def get_sprite(self):
-        return self.sprite
-
-    def get_weight(self):
-        return f"{self.weight} kg"
-
-    def get_height(self):
-        return f"{self.height} m"
-
-    def get_types(self):
-        return ", ".join(self.types)
+    def get_name(self): return self.name
+    def get_sprite(self): return self.sprite
+    def get_weight(self): return f"{self.weight} kg"
+    def get_height(self): return f"{self.height} m"
+    def get_types(self): return ", ".join(self.types)

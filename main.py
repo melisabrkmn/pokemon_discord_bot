@@ -33,6 +33,9 @@ async def go(ctx):
             color=discord.Color.blurple(),
             description="Great choice! Here are the details of your Pokemon."
         )
+        if pokemon.is_shiny:
+            embed.add_field(name="LUCKY PULL!", value="**You have caught a shiny Pokémon!**", inline=False)
+
         embed.add_field(name="Type", value=pokemon.get_types(), inline=True)
         embed.add_field(name="Height", value=pokemon.get_height(), inline=True)
         embed.add_field(name="Weight", value=pokemon.get_weight(), inline=True)
@@ -56,6 +59,30 @@ async def go(ctx):
         embed.set_image(url=pokemon.get_sprite())
 
         await ctx.send(content="You can't create another Pokémon!", embed=embed) # Bir Pokémon'un daha önce oluşturulup oluşturulmadığını gösteren bir mesaj
+
+
+# '!besle' komutu
+@bot.command()
+async def besle(ctx):
+    author_id = ctx.author.id
+    
+    if author_id in Pokemon.pokemons:
+        pokemon = Pokemon.pokemons[author_id]
+        leveled_up = pokemon.feed()
+        
+        if leveled_up:
+            embed = discord.Embed(
+                title=f"CONGRATS! {pokemon.get_name()} leveled up!",
+                description=f"New Level: **{pokemon.level}**\n **HP:** {pokemon.hp} (+5)\n **Attack:** {pokemon.attack} (+3)",
+                color=discord.Color.purple()
+            )
+            embed.set_thumbnail(url=pokemon.get_sprite())
+            await ctx.send(embed=embed)
+        else:
+            bonus_text = "(Shiny Bonus: +20 EXP)" if pokemon.is_shiny else "(+10 EXP)"
+            await ctx.send(f"**{pokemon.get_name()}** has been fed! {bonus_text}\nCurrent EXP: **{pokemon.exp}/30** | Level: **{pokemon.level}**")
+    else:
+        await ctx.send("You don't have a Pokémon yet! Catch one by typing `!go`.")
 
 # Botun çalıştırılması
 bot.run(token)
