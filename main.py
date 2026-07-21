@@ -61,9 +61,9 @@ async def go(ctx):
         await ctx.send(content="You can't create another Pokémon!", embed=embed) # Bir Pokémon'un daha önce oluşturulup oluşturulmadığını gösteren bir mesaj
 
 
-# '!besle' komutu
+# '!feed' komutu
 @bot.command()
-async def besle(ctx):
+async def feed(ctx):
     author_id = ctx.author.id
     
     if author_id in Pokemon.pokemons:
