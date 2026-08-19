@@ -16,15 +16,15 @@ Each trainer can own only one Pokémon. A caught Pokémon can belong to the norm
 
 ## ✨ Features
 
-- 🎲 Catch a random Pokémon
-- ✨ Chance to discover a shiny Pokémon
-- 🧙 Wizard and 🥊 Fighter classes
-- 🍎 Feeding and EXP system
-- ⬆️ Leveling with HP and attack increases
-- ❤️ Pokémon healing system
-- ⚔️ Battles against other trainers' Pokémon
-- 📊 Pokémon information display
-- 🖼️ Pokémon images provided by PokéAPI
+- Catch a random Pokémon
+- Chance to discover a shiny Pokémon
+- Wizard and Fighter classes
+- Feeding and EXP system
+- Leveling with HP and attack increases
+- Pokémon healing system
+- Battles against other trainers' Pokémon
+- Pokémon information display
+- Pokémon images provided by PokéAPI
 
 ## 🤖 Commands
 
@@ -136,4 +136,4 @@ Example Markdown:
 - Pokémon data: [PokéAPI](https://pokeapi.co/)
 - Discord library: [discord.py](https://discordpy.readthedocs.io/)
 
-Good luck on your Pokémon adventure! ⚡🔥💧🌿
+Good luck on your Pokémon adventure! ⚡
